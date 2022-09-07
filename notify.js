@@ -22,7 +22,7 @@ client.once('ready', async () => {
 let notify_user = async function(){
   let guild = await client.guilds.fetch(guildId)
   // console.log(guild)
-  let members = await guild.members.fetch({ query: 'kam', limit: 1 })
+  let members = await guild.members.fetch({ query: 'korostelevm', limit: 1 })
 
   console.log('asdf')
   let user = members.values().next().value

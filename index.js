@@ -1,48 +1,6 @@
 
-// Require the necessary discord.js classes
-const { Client, GatewayIntentBits } = require('discord.js');
 const { clientId, guildId, token, publicKey } = require('./config.json');
 
-// // Create a new client instance
-// const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-
-// // When the client is ready, run this code (only once)
-
-
-// client.on('interactionCreate', async interaction => {
-//     console.log(interaction)
-// 	if (!interaction.isChatInputCommand()) return;
-
-// 	const { commandName } = interaction;
-
-// 	if (commandName === 'ping') {
-// 		await interaction.reply('Pong!');
-// 	} else if (commandName === 'server') {
-// 		await interaction.reply('Server info.');
-// 	} else if (commandName === 'user') {
-// 		await interaction.reply('User info.');
-// 	}
-// });
-
-// // Login to Discord with your client's token
-// client.login(token);/
-
-
-// const { SlashCommandBuilder, Routes } = require('discord.js');
-// const { REST } = require('@discordjs/rest');
-
-// const commands = [
-// 	new SlashCommandBuilder().setName('ping').setDescription('Replies with pong!'),
-// 	new SlashCommandBuilder().setName('server').setDescription('Replies with server info!'),
-// 	new SlashCommandBuilder().setName('user').setDescription('Replies with user info!'),
-// ]
-// 	.map(command => command.toJSON());
-
-// const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
-
-// rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID), { body: commands })
-// 	.then(() => console.log('Successfully registered application commands.'))
-// 	.catch(console.error);
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -52,25 +10,28 @@ const { InteractionType, InteractionResponseType, verifyKeyMiddleware } = requir
 const app = express();
 
 app.post('/interactions', verifyKeyMiddleware(publicKey), async(req, res) => {
+  
   const interaction = req.body;
+  console.log(JSON.stringify(interaction))
   
   if (interaction.type === InteractionType.MESSAGE_COMPONENT) {
     console.log('message component')
-    console.log(interaction)
-    if(interaction.data.custom_id == 'approve'){
+    // console.log(interaction)
+    let [github_id, state] = interaction.data.custom_id.split('_')
+    if(state == 'approve'){
       return res.send({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
-          content: 'Cool. You\'re good to go.',
+          content: `${github_id} Cool. You\'re good to go.`,
           components: []
         },
       });
     }
-    if(interaction.data.custom_id == 'reject'){
+    if(state == 'reject'){
       return res.send({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
-          content: 'Thank you. We will investigate what happened.',
+          content: `${github_id} is not you. We will investgate`,
           components: []
         },
       });
@@ -78,7 +39,7 @@ app.post('/interactions', verifyKeyMiddleware(publicKey), async(req, res) => {
   }
 
   if (interaction.type === InteractionType.APPLICATION_COMMAND) {
-
+    
     // let user = await client.users.fetch(interaction.member.user.id)
     // await user.send('yo')
     // console.log(user)
