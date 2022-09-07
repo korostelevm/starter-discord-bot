@@ -1,8 +1,8 @@
 
 
 const { clientId, guildId, token, publicKey } = require('./config.json');
-
 const axios = require('axios');
+
 const discord = axios.create({
   baseURL: 'https://discordapp.com/api/',
   timeout: 1000,
